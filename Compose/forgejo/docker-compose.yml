@@ -1,0 +1,47 @@
+services:
+  db:
+    container_name: forgejo_db
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: forgejo
+      POSTGRES_USER: forgejo
+      POSTGRES_PASSWORD: supersecurepassword
+    volumes:
+      - /srv/dev-disk-by-uuid-68dddd05-1261-4cce-b5c1-a230efcf2c9e/System/appData/forgejo/postgres:/var/lib/postgresql/data
+    networks:
+      internal: {}  # keep static IP here if you want
+
+  forgejo:
+    container_name: forgejo
+    image: codeberg.org/forgejo/forgejo:14
+    restart: always
+    depends_on:
+      - db
+    environment:
+      USER_UID: 1000
+      USER_GID: 1000
+      DB_TYPE: postgres
+      DB_HOST: forgejo_db:5432
+      DB_NAME: forgejo
+      DB_USER: forgejo
+      DB_PASSWD: supersecurepassword
+      FORGEJO__server__DOMAIN: forgejo.lan
+      FORGEJO__server__ROOT_URL: http://forgejo.lan
+      FORGEJO__server__SSH_DOMAIN: forgejo.lan
+      FORGEJO__webhook__ALLOWED_HOST_LIST: 172.20.20.11
+    volumes:
+      - /srv/dev-disk-by-uuid-68dddd05-1261-4cce-b5c1-a230efcf2c9e/System/appData/forgejo/data:/data
+    networks:
+      vlan23:
+        ipv4_address: 172.20.23.80  # keep this static
+      internal: {}  # Docker assigns IP automatically
+    ports:
+      - "3000:3000"
+      - "222:2222"
+
+networks:
+  vlan23:
+    external: true
+  internal:
+    driver: bridge

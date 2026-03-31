@@ -1,0 +1,31 @@
+# transmission
+services:
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ="Asia/Jakarta"
+      - TRANSMISSION_WEB_HOME= #optional
+      - USER= #optional
+      - PASS= #optional
+      - WHITELIST= #optional
+      - PEERPORT= #optional
+      - HOST_WHITELIST= #optional
+    volumes:
+      - /srv/dev-disk-by-uuid-68dddd05-1261-4cce-b5c1-a230efcf2c9e/System/appData/transmission/config:/config
+      - /srv/dev-disk-by-uuid-68dddd05-1261-4cce-b5c1-a230efcf2c9e/System/appData/transmission/watch:/watch
+      - /srv/mergerfs/Bucket/Share/Downloads:/downloads
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    restart: unless-stopped
+    networks:
+      vlan23:
+        ipv4_address: 172.20.23.68  # pick a free IP in the subnet
+
+networks:
+  vlan23:
+    external: true

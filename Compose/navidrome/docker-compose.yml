@@ -1,0 +1,21 @@
+# navidrome
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    restart: always
+    ports:
+      - "4533:4533"
+    environment:
+      ND_LOGLEVEL: info
+    volumes:
+      - /srv/mergerfs/Bucket/Share/Music:/music
+      - /srv/mergerfs/Bucket/Share/Podcast:/music/Podcast
+      - /srv/dev-disk-by-uuid-68dddd05-1261-4cce-b5c1-a230efcf2c9e/System/appData/navidrome/data:/data
+    networks:
+      vlan23:
+        ipv4_address: 172.20.23.67  # pick a free IP in the subnet
+
+networks:
+  vlan23:
+    external: true

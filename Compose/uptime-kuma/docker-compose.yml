@@ -1,0 +1,16 @@
+services:
+  uptime-kuma:
+    container_name: uptime-kuma
+    image: louislam/uptime-kuma
+    ports:
+      - '3001:3001'
+    restart: always
+    volumes:
+      - /srv/dev-disk-by-uuid-68dddd05-1261-4cce-b5c1-a230efcf2c9e/System/appData/uptime-kuma/data:/app/data
+    networks:
+      vlan23:
+        ipv4_address: 172.20.23.69  # pick a free IP in the subnet
+
+networks:
+  vlan23:
+    external: true

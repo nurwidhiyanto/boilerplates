@@ -1,0 +1,38 @@
+# plex
+services:
+  plex:
+    image: plexinc/pms-docker:latest
+    container_name: plex
+    devices:
+      - /dev/dri:/dev/dri
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Jakarta
+      - PLEX_CLAIM=
+      - ADVERTISE_IP=http://172.20.60.22:32400
+    ports:
+      - 32400:32400
+      - 32400:32400/tcp
+      - 3005:3005/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+    volumes:
+      - /srv/dev-disk-by-uuid-68dddd05-1261-4cce-b5c1-a230efcf2c9e/System/appData/plex/config:/config
+      - /srv/dev-disk-by-uuid-68dddd05-1261-4cce-b5c1-a230efcf2c9e/System/appData/plex/data:/data
+      - /srv/mergerfs/Bucket/Share/Movies:/Movies:ro
+      - /srv/mergerfs/Bucket/Share/TVShows:/TVShows:ro
+      - /srv/mergerfs/Bucket/Share/Downloads:/Downloads:ro
+    restart: unless-stopped
+    networks:
+      vlan60:
+        ipv4_address: 172.20.60.22  # pick a free IP in the subnet
+
+networks:
+  vlan60:
+    external: true

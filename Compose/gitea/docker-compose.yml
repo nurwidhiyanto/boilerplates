@@ -1,0 +1,49 @@
+services:
+  db:
+    container_name: gitea_db
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: gitea
+      POSTGRES_USER: gitea
+      POSTGRES_PASSWORD: supersecurepassword
+    volumes:
+      - /srv/dev-disk-by-uuid-68dddd05-1261-4cce-b5c1-a230efcf2c9e/System/appData/gitea/postgres:/var/lib/postgresql/data
+    networks:
+      internal: {}  # keep static IP here if you want
+
+  gitea:
+    container_name: gitea
+    image: gitea/gitea:latest
+    restart: always
+    depends_on:
+      - db
+    environment:
+      USER_UID: 1000
+      USER_GID: 1000
+      DB_TYPE: postgres
+      DB_HOST: gitea_db:5432
+      DB_NAME: gitea
+      DB_USER: gitea
+      DB_PASSWD: supersecurepassword
+      GITEA__server__DOMAIN: gitea.lan
+      GITEA__server__ROOT_URL: http://gitea.lan
+      GITEA__server__HTTP_PORT: 80
+      GITEA__server__SSH_DOMAIN: gitea.lan
+      GITEA__server__SSH_PORT: 22
+      GITEA__webhook__ALLOWED_HOST_LIST: 172.20.20.11
+    volumes:
+      - /srv/dev-disk-by-uuid-68dddd05-1261-4cce-b5c1-a230efcf2c9e/System/appData/gitea/data:/data
+    networks:
+      vlan23:
+        ipv4_address: 172.20.23.127  # keep this static
+      internal: {}  # Docker assigns IP automatically
+    ports:
+      - "8080:80"
+      - "2222:22"
+
+networks:
+  vlan23:
+    external: true
+  internal:
+    driver: bridge

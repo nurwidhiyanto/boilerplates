@@ -1,0 +1,15 @@
+services:
+  glances:
+    image: nicolargo/glances:latest-full
+    container_name: glances
+    pid: host
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /run/user/1000/podman/podman.sock:/run/user/1000/podman/podman.sock:ro
+      - /srv/dev-disk-by-uuid-68dddd05-1261-4cce-b5c1-a230efcf2c9e/System/appData/glances/conf:/glances/conf
+      - /srv/mergerfs/Bucket:/Bucket:ro
+    environment:
+      - "GLANCES_OPT=-w"
+      - TZ=TZ=Asia/Jakarta
+    restart: unless-stopped
